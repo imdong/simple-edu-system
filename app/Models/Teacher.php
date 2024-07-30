@@ -19,9 +19,11 @@ use Laravel\Passport\HasApiTokens;
  */
 class Teacher extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, useUserRole;
 
     protected $table = 'admin_users';
+
+    private string $role = 'teacher';
 
     protected $fillable = [
         'username',

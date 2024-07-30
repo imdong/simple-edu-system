@@ -3,36 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Models\Student;
-use App\Models\Teacher;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * @var User[] 可供登陆的模型
-     */
-    protected array $authModels = [
-        'teacher' => Teacher::class,
-        'student' => Student::class,
-    ];
-
-    /**
-     * 获取登陆模型
-     *
-     * @param string $type
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function getAuthMode(string $type): \Illuminate\Database\Eloquent\Builder
-    {
-        $model = $this->authModels[$type];
-
-        return $model::query();
-    }
-
     /**
      * 登陆鉴权
      *
@@ -41,29 +16,21 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        $guard_type = $request->input('type');
-        $credentials = $request->only('type', 'username', 'password');
+        $guard_name = $request->input('type');
+        $credentials = $request->only('username', 'password');
 
-        try {
-            // 查找用户
-            $user = $this->getAuthMode($guard_type)
-                ->where('username', $credentials['username'])
-                ->firstOrFail();
+        $provider = Auth::guard($guard_name)->getProvider();
+        $user = $provider->retrieveByCredentials($credentials);
 
-            // 验证密码是否正确
-            if (!Hash::check($credentials['password'], $user->password)) {
-                return $this->failure('Incorrect user name or password', 401);
-            }
-
-            // 返回 token
-            return $this->successData([
-                'token' => $user->createToken($guard_type)->accessToken
-            ]);
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        // 失败否？
+        if (!$user || !$provider->validateCredentials($user, $credentials)) {
             return $this->failure('Incorrect user name or password', 401);
         }
 
+        // 返回 token
+        return $this->successData([
+            'token' => $user->createToken($guard_name)->accessToken
+        ]);
     }
 
     /**
@@ -74,7 +41,11 @@ class AuthController extends Controller
     public function user(): JsonResponse
     {
         $user = Auth::user();
-        dd($user);
+
+        return $this->successData([
+            'role' => $user->getUserRole(),
+            'user' => $user,
+        ]);
     }
 
 }
