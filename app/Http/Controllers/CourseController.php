@@ -55,9 +55,12 @@ class CourseController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * @throws \Throwable
      */
-    public function destroy(Course $course)
+    public function destroy(Course $course): \Illuminate\Http\JsonResponse
     {
-        //
+        $course->deleteOrFail();
+
+        return $this->success();
     }
 }

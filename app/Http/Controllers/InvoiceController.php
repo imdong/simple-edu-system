@@ -65,4 +65,15 @@ class InvoiceController extends Controller
         );
     }
 
+    /**
+     * Remove the specified resource from storage.
+     * @throws \Throwable
+     */
+    public function destroy(Invoice $invoice): \Illuminate\Http\JsonResponse
+    {
+        $invoice->deleteOrFail();
+
+        return $this->success();
+    }
+
 }
