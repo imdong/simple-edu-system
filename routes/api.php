@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// 登陆接口
+Route::post('/auth/login', [AuthController::class, 'login']);
+
+// 教师相关路由
+Route::group([
+    'middleware' => 'auth:teacher',
+], function () {
+    // 查看登陆用户身份(调试)
+    Route::get('/auth/teacher', [AuthController::class, 'user']);
+});
+
+// 学生相关路由
+Route::group([
+    'middleware' => 'auth:student',
+], function () {
+    // 查看登陆用户身份(调试)
+    Route::get('/auth/student', [AuthController::class, 'user']);
 });
