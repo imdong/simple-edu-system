@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,6 +24,9 @@ Route::group([
 ], function () {
     // 查看登陆用户身份(调试)
     Route::get('/auth/teacher', [AuthController::class, 'user']);
+
+    // 课程管理
+    Route::apiResource('courses', CourseController::class);
 });
 
 // 学生相关路由

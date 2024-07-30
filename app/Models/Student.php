@@ -10,6 +10,7 @@ use Laravel\Passport\HasApiTokens;
 /**
  * 学生表
  *
+ * @property int $id
  * @property string $username
  * @property string $password
  * @property string $name
@@ -46,5 +47,4 @@ class Student extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
-
 }
