@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,17 +14,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 // 登陆接口
-Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/login', [App\Http\Controllers\AuthController::class, 'login']);
 
 // 教师相关路由
 Route::group([
     'middleware' => 'auth:teacher',
 ], function () {
     // 查看登陆用户身份(调试)
-    Route::get('/auth/teacher', [AuthController::class, 'user']);
+    Route::get('/auth/teacher', [App\Http\Controllers\AuthController::class, 'user']);
 
     // 课程管理
-    Route::apiResource('courses', CourseController::class);
+    Route::apiResource('courses', App\Http\Controllers\CourseController::class);
+
+    // 账单管理
+    Route::apiResource('invoices', App\Http\Controllers\InvoiceController::class);
 });
 
 // 学生相关路由
@@ -34,5 +35,5 @@ Route::group([
     'middleware' => 'auth:student',
 ], function () {
     // 查看登陆用户身份(调试)
-    Route::get('/auth/student', [AuthController::class, 'user']);
+    Route::get('/auth/student', [App\Http\Controllers\AuthController::class, 'user']);
 });

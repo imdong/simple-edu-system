@@ -11,7 +11,7 @@ class CourseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
         $data = Course::query()
             ->usePage();
@@ -23,7 +23,7 @@ class CourseController extends Controller
      * Store a newly created resource in storage.
      * @throws \Throwable
      */
-    public function store(StoreCourseRequest $request)
+    public function store(StoreCourseRequest $request): \Illuminate\Http\JsonResponse
     {
         $data = $request->validated();
 
@@ -36,15 +36,16 @@ class CourseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Course $course)
+    public function show(Course $course): \Illuminate\Http\JsonResponse
     {
-        return $this->successData($course);
+        return $this->successData($course->append(['student']));
     }
 
     /**
      * Update the specified resource in storage.
+     * @throws \Throwable
      */
-    public function update(UpdateCourseRequest $request, Course $course)
+    public function update(UpdateCourseRequest $request, Course $course): \Illuminate\Http\JsonResponse
     {
         $course->fill($request->validated());
         $course->saveOrFail();

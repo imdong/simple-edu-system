@@ -2,8 +2,12 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -39,7 +43,7 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         // 参数验证失败
-        $this->renderable(function (\Illuminate\Validation\ValidationException $e) {
+        $this->renderable(function (ValidationException $e) {
             if ($this->is_json) {
                 return response()->json([
                     'code'    => 400,
@@ -49,18 +53,8 @@ class Handler extends ExceptionHandler
             }
         });
 
-        // 找不到页面
-        $this->renderable(function (\Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException|\Symfony\Component\HttpKernel\Exception\NotFoundHttpException  $e) {
-            if ($this->is_json) {
-                return response()->json([
-                    'code'    => 404,
-                    'message' => $e->getMessage()
-                ], 404);
-            }
-        });
-
         // 未登陆
-        $this->renderable(function (\Illuminate\Auth\AuthenticationException $e) {
+        $this->renderable(function (AuthenticationException $e) {
             if ($this->is_json) {
                 return response()->json([
                     'code'    => 401,
@@ -69,9 +63,34 @@ class Handler extends ExceptionHandler
             }
         });
 
+        // 操作拒绝
+        $this->reportable(function (OperationDeniedException $e) {
+            if ($this->is_json) {
+                return response()->json([
+                    'code'    => 403,
+                    'message' => $e->getMessage()
+                ], 403);
+            }
+        });
+
+        // 找不到页面
+        $this->renderable(function (MethodNotAllowedHttpException|NotFoundHttpException $e) {
+            if ($this->is_json) {
+                return response()->json([
+                    'code'    => 404,
+                    'message' => $e->getMessage()
+                ], 404);
+            }
+        });
+
         // 暂不处理
         $this->reportable(function (Throwable $e) {
-            // dd($e);
+            if ($this->is_json) {
+                return response()->json([
+                    'code'    => $e->getCode(),
+                    'message' => $e->getMessage()
+                ], 500);
+            }
         });
     }
 }

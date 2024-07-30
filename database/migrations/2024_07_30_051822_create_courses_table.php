@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id')->comment('学生');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
