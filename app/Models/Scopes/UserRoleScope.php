@@ -22,6 +22,10 @@ class UserRoleScope implements Scope
          */
         $user = Auth::user();
 
+        if (!$user) {
+            return;
+        }
+
         // 不同权限的用户 查询条件不一样
         switch ($user->getUserRole()) {
             case 'teacher':

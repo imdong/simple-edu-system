@@ -87,4 +87,14 @@ class Course extends Model
         return $this->hasOne(Student::class, 'id', 'student_id')->first();
     }
 
+    /**
+     * 关联的账单
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function invoice(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Invoice::class, 'course_id', 'id');
+    }
+
 }
