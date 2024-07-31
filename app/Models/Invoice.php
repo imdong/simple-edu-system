@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Scopes\PaginationScope;
+use App\Models\Scopes\PaginationScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @property int $id
  * @property int $course_id 关联课程 ID
+ * @property int $teacher_id 关联老师ID
  * @property int $student_id 关联学生 ID
  * @property int $amount 需要支付的金额
  * @property int $status 订单状态
@@ -46,6 +47,7 @@ class Invoice extends Model
 
     protected $fillable = [
         'course_id',
+        'teacher_id',
         'student_id',
         'amount',
     ];
@@ -80,7 +82,17 @@ class Invoice extends Model
     }
 
     /**
-     * 获取关联的课程
+     * 获取关联的学生
+     *
+     * @return Model
+     */
+    public function getTeacherAttribute(): Model
+    {
+        return $this->hasOne(Teacher::class, 'id', 'teacher_id')->first();
+    }
+
+    /**
+     * 获取关联的学生
      *
      * @return Model
      */

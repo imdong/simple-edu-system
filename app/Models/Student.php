@@ -47,4 +47,33 @@ class Student extends Authenticatable
     protected $casts = [
         'password' => 'hashed',
     ];
+
+    /**
+     * 通过给定的username获取用户实例。
+     *
+     * @param string $username
+     * @return Student
+     */
+    public function findForPassport(string $username): Student
+    {
+        return $this->where('username', $username)->first();
+    }
+
+    /**
+     * Set the current access token for the user.
+     *
+     * @param \Laravel\Passport\Token $accessToken
+     * @return $this
+     */
+    public function withAccessToken($accessToken)
+    {
+        // 判断是否为自己
+        if ($accessToken->name != $this->role) {
+            return null;
+        }
+
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
 }

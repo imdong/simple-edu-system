@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use App\Scopes\PaginationScope;
+use App\Models\Scopes\CourseScope;
+use App\Models\Scopes\PaginationScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $name 课程名
  * @property Carbon $date 年月
  * @property int $cost 费用
- * @property int $student_id
+ * @property int $teacher_id 关联老师ID
+ * @property int $student_id 关联学生ID
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon $deleted_at
@@ -29,6 +31,7 @@ class Course extends Model
         'name',
         'date',
         'cost',
+        'teacher_id',
         'student_id',
     ];
 
@@ -55,10 +58,23 @@ class Course extends Model
     {
         parent::boot();
 
+        // 只允许查询自己的数据
+        static::addGlobalScope(new CourseScope());
+
         static::saving(function ($model) {
             // 保存时修改下时间格式
             $model->date = $model->date->format('Y-m-01');
         });
+    }
+
+    /**
+     * 添加关联老师字段
+     *
+     * @return Model
+     */
+    public function getTeacherAttribute(): Model
+    {
+        return $this->hasOne(Teacher::class, 'id', 'teacher_id')->first();
     }
 
     /**

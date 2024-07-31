@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Scopes;
+namespace App\Models\Scopes;
 
 use App\Http\Requests\PageRequest;
 use Illuminate\Database\Eloquent\Builder;

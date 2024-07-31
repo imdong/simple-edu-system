@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Scopes\TeacherScope;
+use App\Models\Scopes\TeacherScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -59,6 +59,35 @@ class Teacher extends Authenticatable
 
         // 只允许查询 type = teacher
         static::addGlobalScope(new TeacherScope());
+    }
+
+    /**
+     * 通过给定的username获取用户实例。
+     *
+     * @param string $username
+     * @return \App\Models\Teacher
+     */
+    public function findForPassport(string $username): Teacher
+    {
+        return $this->where('username', $username)->first();
+    }
+
+    /**
+     * Set the current access token for the user.
+     *
+     * @param \Laravel\Passport\Token $accessToken
+     * @return $this
+     */
+    public function withAccessToken($accessToken)
+    {
+        // 判断是否为自己
+        if ($accessToken->name != $this->role) {
+            return null;
+        }
+
+        $this->accessToken = $accessToken;
+
+        return $this;
     }
 
 }

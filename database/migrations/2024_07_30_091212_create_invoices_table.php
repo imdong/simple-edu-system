@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
 
             $table->unsignedBigInteger('course_id')->comment('关联课程 ID')->unique();
+            $table->unsignedBigInteger('teacher_id')->comment('关联课程的老师ID');
             $table->unsignedBigInteger('student_id')->comment('关联学生 ID');
             $table->decimal('amount', 8, 4)->comment('需要支付的金额');
             $table->smallInteger('status')->default(0)->comment('订单状态');

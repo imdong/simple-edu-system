@@ -17,10 +17,11 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
-            'date' =>$this->faker->dateTimeBetween('-2 years', '+1 years')->format('Y-m-01'),
-            'cost' => $this->faker->randomFloat(2, 100, 1000),
-            'student_id' => $this->faker->numberBetween(1, 150)
+            'name'       => $this->faker->name(),
+            'date'       => $this->faker->dateTimeBetween('-2 years', '+1 years')->format('Y-m-01'),
+            'cost'       => $this->faker->randomFloat(2, 100, 1000),
+            'teacher_id' => $this->faker->numberBetween(1, 50),
+            'student_id' => $this->faker->numberBetween(1, 150),
         ];
     }
 }

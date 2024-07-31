@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,6 +23,10 @@ class AuthController extends Controller
         $credentials = $request->only('username', 'password');
 
         $provider = Auth::guard($guard_name)->getProvider();
+
+        /**
+         * @var User|Teacher|Student $user
+         */
         $user = $provider->retrieveByCredentials($credentials);
 
         // 失败否？
@@ -29,7 +36,8 @@ class AuthController extends Controller
 
         // 返回 token
         return $this->successData([
-            'token' => $user->createToken($guard_name)->accessToken
+            'role' => $user->getUserRole(),
+            'token' => $user->createToken($guard_name)->accessToken,
         ]);
     }
 

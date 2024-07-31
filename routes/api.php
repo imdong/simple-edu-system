@@ -19,9 +19,10 @@ Route::post('/auth/login', [App\Http\Controllers\AuthController::class, 'login']
 // 教师相关路由
 Route::group([
     'middleware' => 'auth:teacher',
+    'prefix'     => 'teacher',
 ], function () {
     // 查看登陆用户身份(调试)
-    Route::get('/auth/teacher', [App\Http\Controllers\AuthController::class, 'user']);
+    Route::get('/user', [App\Http\Controllers\AuthController::class, 'user']);
 
     // 课程管理
     Route::apiResource('courses', App\Http\Controllers\CourseController::class);
@@ -33,7 +34,11 @@ Route::group([
 // 学生相关路由
 Route::group([
     'middleware' => 'auth:student',
+    'prefix'     => 'student',
 ], function () {
     // 查看登陆用户身份(调试)
-    Route::get('/auth/student', [App\Http\Controllers\AuthController::class, 'user']);
+    Route::get('/user', [App\Http\Controllers\AuthController::class, 'user']);
+
+    // 课程管理
+    Route::apiResource('courses', App\Http\Controllers\CourseController::class);
 });
