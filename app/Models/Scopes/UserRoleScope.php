@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 use Illuminate\Support\Facades\Auth;
 
-class CourseScope implements Scope
+class UserRoleScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.

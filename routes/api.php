@@ -41,4 +41,7 @@ Route::group([
 
     // 课程管理
     Route::apiResource('courses', App\Http\Controllers\CourseController::class);
+
+    // 账单管理
+    Route::apiResource('invoices', App\Http\Controllers\InvoiceController::class);
 });

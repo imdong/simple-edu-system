@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\PaginationScope;
+use App\Models\Scopes\UserRoleScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -70,6 +71,14 @@ class Invoice extends Model
         'updated_at' => 'timestamp',
         'deleted_at' => 'timestamp',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        // 只允许查询自己的数据
+        static::addGlobalScope(new UserRoleScope());
+    }
 
     /**
      * 获取关联的课程

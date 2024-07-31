@@ -26,6 +26,7 @@ class InvoiceService extends BaseService
 
         $invoice->fill([
             'course_id'  => $course->id,
+            'teacher_id' => $course->teacher_id,
             'student_id' => $course->student_id,
             'amount'     => $course->cost,
         ]);

@@ -20,7 +20,7 @@ class StoreInvoiceRequest extends FormRequest
             'course_id' => [
                 'required',
                 Rule::exists(Course::class, 'id'),
-                Rule::unique(Invoice::class, 'course_id')
+                Rule::unique(Invoice::class, 'course_id')->whereNull('deleted_at'),
             ],
         ];
     }

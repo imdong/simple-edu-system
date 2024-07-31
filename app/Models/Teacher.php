@@ -3,10 +3,6 @@
 namespace App\Models;
 
 use App\Models\Scopes\TeacherScope;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
 
 /**
  * 教师表
@@ -17,13 +13,12 @@ use Laravel\Passport\HasApiTokens;
  * @property string $type
  * @property string $remember_token
  */
-class Teacher extends Authenticatable
+class Teacher extends User
 {
-    use HasApiTokens, HasFactory, Notifiable, useUserRole;
 
     protected $table = 'admin_users';
 
-    private string $role = 'teacher';
+    protected string $role = 'teacher';
 
     protected $fillable = [
         'username',
@@ -70,24 +65,6 @@ class Teacher extends Authenticatable
     public function findForPassport(string $username): Teacher
     {
         return $this->where('username', $username)->first();
-    }
-
-    /**
-     * Set the current access token for the user.
-     *
-     * @param \Laravel\Passport\Token $accessToken
-     * @return $this
-     */
-    public function withAccessToken($accessToken)
-    {
-        // 判断是否为自己
-        if ($accessToken->name != $this->role) {
-            return null;
-        }
-
-        $this->accessToken = $accessToken;
-
-        return $this;
     }
 
 }

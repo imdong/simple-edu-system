@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('course_id')->comment('关联课程 ID')->unique();
+            $table->unsignedBigInteger('course_id')->comment('关联课程 ID');
             $table->unsignedBigInteger('teacher_id')->comment('关联课程的老师ID');
             $table->unsignedBigInteger('student_id')->comment('关联学生 ID');
             $table->decimal('amount', 8, 4)->comment('需要支付的金额');
@@ -28,6 +28,8 @@ return new class extends Migration {
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['course_id', 'deleted_at']);
         });
     }
 

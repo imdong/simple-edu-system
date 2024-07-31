@@ -6,11 +6,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Passport\Token;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    protected string $role = 'user';
 
     /**
      * The attributes that are mass assignable.
@@ -40,6 +43,32 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
+        'password'          => 'hashed',
     ];
+
+    /**
+     * Set the current access token for the user.
+     *
+     * @param Token $accessToken
+     * @return User|null
+     */
+    public function withAccessToken($accessToken): null|static
+    {
+        // 判断是否为自己
+        if ($accessToken->name != $this->getUserRole()) {
+            return null;
+        }
+
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    /**
+     * @return string 用于扩充用户 Role 身份获取
+     */
+    public function getUserRole(): string
+    {
+        return $this->role;
+    }
 }

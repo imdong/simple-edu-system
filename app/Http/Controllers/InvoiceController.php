@@ -2,21 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\OperationDeniedException;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Course;
 use App\Models\Invoice;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\User;
 use App\Services\InvoiceService;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * @throws OperationDeniedException
      */
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index(Request $request): \Illuminate\Http\JsonResponse
     {
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('viewAny', Invoice::class)) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
+        $query = Invoice::query();
+
+        // 如果是学生 额外加个条件
+        if ($user->getUserRole() == 'student') {
+            $query->where('status', '!=', Invoice::STATUS_CREATED);
+        }
+
         return $this->successData(
-            Invoice::query()->usePage()
+            $query->usePage()
         );
     }
 
@@ -30,6 +51,15 @@ class InvoiceController extends Controller
         $course = Course::query()
             ->findOrFail($course_id);
 
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('create', $course)) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
+        // 创建数据独
         $invoice = InvoiceService::create($course);
         $invoice->saveOrFail();
 
@@ -38,9 +68,18 @@ class InvoiceController extends Controller
 
     /**
      * Display the specified resource.
+     * @throws OperationDeniedException
      */
-    public function show(Invoice $invoice): \Illuminate\Http\JsonResponse
+    public function show(Request $request, Invoice $invoice): \Illuminate\Http\JsonResponse
     {
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('view', $invoice)) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
         return $this->successData(
             $invoice->append(['course', 'student'])
         );
@@ -53,6 +92,15 @@ class InvoiceController extends Controller
     public function update(UpdateInvoiceRequest $request, Invoice $invoice): \Illuminate\Http\JsonResponse
     {
         $action = $request->input('action');
+
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('update', [$invoice, $action])) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
         $service = new InvoiceService($invoice);
 
         // 调用处理
@@ -69,8 +117,16 @@ class InvoiceController extends Controller
      * Remove the specified resource from storage.
      * @throws \Throwable
      */
-    public function destroy(Invoice $invoice): \Illuminate\Http\JsonResponse
+    public function destroy(Request $request, Invoice $invoice): \Illuminate\Http\JsonResponse
     {
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('delete', [$invoice])) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
         $invoice->deleteOrFail();
 
         return $this->success();

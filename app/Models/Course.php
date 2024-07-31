@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\CourseScope;
+use App\Models\Scopes\UserRoleScope;
 use App\Models\Scopes\PaginationScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -59,7 +59,7 @@ class Course extends Model
         parent::boot();
 
         // 只允许查询自己的数据
-        static::addGlobalScope(new CourseScope());
+        static::addGlobalScope(new UserRoleScope());
 
         static::saving(function ($model) {
             // 保存时修改下时间格式

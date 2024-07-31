@@ -2,17 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\OperationDeniedException;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\User;
+use App\Services\CourseService;
+use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * @throws OperationDeniedException
      */
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index(Request $request): \Illuminate\Http\JsonResponse
     {
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('viewAny', Course::class)) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
         $data = Course::query()
             ->usePage();
 
@@ -25,9 +40,17 @@ class CourseController extends Controller
      */
     public function store(StoreCourseRequest $request): \Illuminate\Http\JsonResponse
     {
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('create', Course::class)) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
         $data = $request->validated();
 
-        $model = new Course($data);
+        $model = CourseService::create($data, $user);
         $model->saveOrFail();
 
         return $this->successData($model);
@@ -35,9 +58,18 @@ class CourseController extends Controller
 
     /**
      * Display the specified resource.
+     * @throws OperationDeniedException
      */
-    public function show(Course $course): \Illuminate\Http\JsonResponse
+    public function show(Request $request, Course $course): \Illuminate\Http\JsonResponse
     {
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('view', $course)) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
         return $this->successData($course->append(['student']));
     }
 
@@ -47,6 +79,14 @@ class CourseController extends Controller
      */
     public function update(UpdateCourseRequest $request, Course $course): \Illuminate\Http\JsonResponse
     {
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('update', $course)) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
         $course->fill($request->validated());
         $course->saveOrFail();
 
@@ -57,8 +97,16 @@ class CourseController extends Controller
      * Remove the specified resource from storage.
      * @throws \Throwable
      */
-    public function destroy(Course $course): \Illuminate\Http\JsonResponse
+    public function destroy(Request $request, Course $course): \Illuminate\Http\JsonResponse
     {
+        /**
+         * @var  User|Teacher|Student $user
+         */
+        $user = $request->user();
+        if ($user->cannot('delete', $course)) {
+            throw new OperationDeniedException('无权限执行该操作');
+        }
+
         $course->deleteOrFail();
 
         return $this->success();

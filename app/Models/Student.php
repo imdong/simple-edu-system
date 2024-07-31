@@ -2,10 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
 
 /**
  * 学生表
@@ -16,11 +12,10 @@ use Laravel\Passport\HasApiTokens;
  * @property string $name
  * @property string $remember_token
  */
-class Student extends Authenticatable
+class Student extends User
 {
-    use HasApiTokens, HasFactory, Notifiable, useUserRole;
 
-    private string $role = 'student';
+    protected string $role = 'student';
 
     protected $fillable = [
         'username',
@@ -57,23 +52,5 @@ class Student extends Authenticatable
     public function findForPassport(string $username): Student
     {
         return $this->where('username', $username)->first();
-    }
-
-    /**
-     * Set the current access token for the user.
-     *
-     * @param \Laravel\Passport\Token $accessToken
-     * @return $this
-     */
-    public function withAccessToken($accessToken)
-    {
-        // 判断是否为自己
-        if ($accessToken->name != $this->role) {
-            return null;
-        }
-
-        $this->accessToken = $accessToken;
-
-        return $this;
     }
 }
