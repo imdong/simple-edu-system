@@ -18,7 +18,7 @@ class Teacher extends User
 
     protected $table = 'admin_users';
 
-    protected string $role = 'teacher';
+    protected string $role = User::USER_ROLE_TEACHER;
 
     protected $fillable = [
         'username',

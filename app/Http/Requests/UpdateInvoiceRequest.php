@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Services\InvoiceService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateInvoiceRequest extends FormRequest
 {
@@ -14,7 +16,8 @@ class UpdateInvoiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'action' => ['required', 'string'],
+            'action' => ['required', 'string', Rule::in(InvoiceService::getActions())],
+            'omise_token' => ['required_if:action,pay', 'string'],
         ];
     }
 }

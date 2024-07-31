@@ -7,8 +7,6 @@ use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Models\Course;
 use App\Models\Invoice;
-use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\User;
 use App\Services\InvoiceService;
 use Illuminate\Http\Request;
@@ -22,7 +20,7 @@ class InvoiceController extends Controller
     public function index(Request $request): \Illuminate\Http\JsonResponse
     {
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('viewAny', Invoice::class)) {
@@ -52,7 +50,7 @@ class InvoiceController extends Controller
             ->findOrFail($course_id);
 
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('create', $course)) {
@@ -73,7 +71,7 @@ class InvoiceController extends Controller
     public function show(Request $request, Invoice $invoice): \Illuminate\Http\JsonResponse
     {
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('view', $invoice)) {
@@ -94,7 +92,7 @@ class InvoiceController extends Controller
         $action = $request->input('action');
 
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('update', [$invoice, $action])) {
@@ -108,9 +106,7 @@ class InvoiceController extends Controller
 
         $invoice->saveOrFail();
 
-        return $this->successData(
-            $invoice
-        );
+        return $this->successData($invoice);
     }
 
     /**
@@ -120,7 +116,7 @@ class InvoiceController extends Controller
     public function destroy(Request $request, Invoice $invoice): \Illuminate\Http\JsonResponse
     {
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('delete', [$invoice])) {

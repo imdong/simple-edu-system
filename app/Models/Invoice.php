@@ -53,6 +53,10 @@ class Invoice extends Model
         'amount',
     ];
 
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     /**
      * 自动转换时间
      *
@@ -72,12 +76,26 @@ class Invoice extends Model
         'deleted_at' => 'timestamp',
     ];
 
+    protected $appends = [
+        'amount_raed',
+    ];
+
     public static function boot()
     {
         parent::boot();
 
         // 只允许查询自己的数据
         static::addGlobalScope(new UserRoleScope());
+    }
+
+    /**
+     * 自动转换一个可读的金额
+     *
+     * @return string
+     */
+    public function getAmountRaedAttribute(): string
+    {
+        return bcdiv($this->amount, 100, 2);
     }
 
     /**
@@ -123,4 +141,22 @@ class Invoice extends Model
         return $this;
     }
 
+    /**
+     * 设置付款完成
+     *
+     * @param string $pay_channel
+     * @param string $pay_order_id
+     * @param string $pay_amount
+     * @param Carbon $paid_at
+     * @return $this
+     */
+    public function paid(string $pay_channel, string $pay_order_id, string $pay_amount, Carbon $paid_at): self
+    {
+        $this->status = static::STATUS_PAID;
+        $this->pay_channel = $pay_channel;
+        $this->pay_order_id = $pay_order_id;
+        $this->pay_amount = $pay_amount;
+        $this->paid_at = $paid_at;
+        return $this;
+    }
 }

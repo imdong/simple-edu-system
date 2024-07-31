@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Course;
 use App\Models\Invoice;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class InvoicePolicy
 {
@@ -32,7 +31,7 @@ class InvoicePolicy
      */
     public function create(User $user, Course $course): bool
     {
-        return $user->getUserRole() == 'teacher' && $course->getAttribute('teacher_id') == $user->getAttribute('id');
+        return $user->getUserRole() == User::USER_ROLE_TEACHER && $course->getAttribute('teacher_id') == $user->getAttribute('id');
     }
 
     /**
@@ -48,7 +47,7 @@ class InvoicePolicy
      */
     public function delete(User $user, Invoice $invoice): bool
     {
-        return $user->getUserRole() == 'teacher' && $invoice->getAttribute('teacher_id') == $user->getAttribute('id');
+        return $user->getUserRole() == User::USER_ROLE_TEACHER && $invoice->getAttribute('teacher_id') == $user->getAttribute('id');
     }
 
     /**
@@ -76,6 +75,11 @@ class InvoicePolicy
      */
     public function send(User $user, Invoice $invoice): bool
     {
-        return $user->getUserRole() == 'teacher' && $invoice->getAttribute('teacher_id') == $user->getAttribute('id');
+        return $user->getUserRole() == User::USER_ROLE_TEACHER && $invoice->getAttribute('teacher_id') == $user->getAttribute('id');
+    }
+
+    public function pay(User $user, Invoice $invoice)
+    {
+        return $user->getUserRole() == User::USER_ROLE_STUDENT && $invoice->getAttribute('student_id') == $user->getAttribute('id');
     }
 }

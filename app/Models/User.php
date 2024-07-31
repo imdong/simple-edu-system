@@ -13,7 +13,14 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected string $role = 'user';
+    /**
+     * 用户模型的身份常量标识
+     */
+    const USER_ROLE_USER = 'user';
+    const USER_ROLE_TEACHER = 'teacher';
+    const USER_ROLE_STUDENT = 'student';
+
+    protected string $role = self::USER_ROLE_USER;
 
     /**
      * The attributes that are mass assignable.

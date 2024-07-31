@@ -14,8 +14,7 @@ namespace App\Models;
  */
 class Student extends User
 {
-
-    protected string $role = 'student';
+    protected string $role = User::USER_ROLE_STUDENT;
 
     protected $fillable = [
         'username',

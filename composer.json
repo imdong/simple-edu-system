@@ -2,7 +2,10 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
@@ -13,7 +16,8 @@
         "laravel/passport": "^11.8",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "omise/omise-php": "^2.18"
+        "omise/omise-php": "^2.18",
+        "ext-bcmath": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

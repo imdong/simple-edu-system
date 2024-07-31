@@ -35,6 +35,10 @@ class Course extends Model
         'student_id',
     ];
 
+    protected $hidden = [
+        'deleted_at',
+    ];
+
     /**
      * 自动转换时间
      *

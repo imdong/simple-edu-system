@@ -3,8 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Course;
-use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\User;
 
 class CoursePolicy
@@ -12,7 +10,7 @@ class CoursePolicy
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User|Teacher|Student $user): bool
+    public function viewAny(User $user): bool
     {
         return true;
     }
@@ -20,7 +18,7 @@ class CoursePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User|Teacher|Student $user, Course $course): bool
+    public function view(User $user, Course $course): bool
     {
         $role = $user->getUserRole();
 
@@ -30,17 +28,17 @@ class CoursePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User|Teacher|Student $user): bool
+    public function create(User $user): bool
     {
-        return $user->getUserRole() == 'teacher';
+        return $user->getUserRole() == User::USER_ROLE_TEACHER;
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User|Teacher|Student $user, Course $course): bool
+    public function update(User $user, Course $course): bool
     {
-        return $user->getUserRole() == 'teacher' && $course->getAttribute('teacher_id') == $user->getAttribute('id');
+        return $user->getUserRole() == User::USER_ROLE_TEACHER && $course->getAttribute('teacher_id') == $user->getAttribute('id');
     }
 
     /**
@@ -48,7 +46,7 @@ class CoursePolicy
      */
     public function delete(User $user, Course $course): bool
     {
-        return $user->getUserRole() == 'teacher' && $course->getAttribute('teacher_id') == $user->getAttribute('id');
+        return $user->getUserRole() == User::USER_ROLE_TEACHER && $course->getAttribute('teacher_id') == $user->getAttribute('id');
     }
 
     /**

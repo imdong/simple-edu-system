@@ -2,8 +2,6 @@
 
 namespace App\Models\Scopes;
 
-use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +16,7 @@ class UserRoleScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         /**
-         * @var User|Teacher|Student $user
+         * @var User $user
          */
         $user = Auth::user();
 
@@ -28,10 +26,10 @@ class UserRoleScope implements Scope
 
         // 不同权限的用户 查询条件不一样
         switch ($user->getUserRole()) {
-            case 'teacher':
+            case User::USER_ROLE_TEACHER:
                 $builder->where('teacher_id', $user->id);
                 break;
-            case 'student':
+            case User::USER_ROLE_STUDENT:
                 $builder->where('student_id', $user->id);
                 break;
         }

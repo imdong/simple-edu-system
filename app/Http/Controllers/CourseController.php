@@ -6,8 +6,6 @@ use App\Exceptions\OperationDeniedException;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
-use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\User;
 use App\Services\CourseService;
 use Illuminate\Http\Request;
@@ -21,7 +19,7 @@ class CourseController extends Controller
     public function index(Request $request): \Illuminate\Http\JsonResponse
     {
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('viewAny', Course::class)) {
@@ -41,7 +39,7 @@ class CourseController extends Controller
     public function store(StoreCourseRequest $request): \Illuminate\Http\JsonResponse
     {
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('create', Course::class)) {
@@ -63,7 +61,7 @@ class CourseController extends Controller
     public function show(Request $request, Course $course): \Illuminate\Http\JsonResponse
     {
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('view', $course)) {
@@ -80,7 +78,7 @@ class CourseController extends Controller
     public function update(UpdateCourseRequest $request, Course $course): \Illuminate\Http\JsonResponse
     {
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('update', $course)) {
@@ -100,7 +98,7 @@ class CourseController extends Controller
     public function destroy(Request $request, Course $course): \Illuminate\Http\JsonResponse
     {
         /**
-         * @var  User|Teacher|Student $user
+         * @var  User $user
          */
         $user = $request->user();
         if ($user->cannot('delete', $course)) {

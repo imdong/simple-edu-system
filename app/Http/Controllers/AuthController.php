@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Models\Student;
-use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +23,7 @@ class AuthController extends Controller
         $provider = Auth::guard($guard_name)->getProvider();
 
         /**
-         * @var User|Teacher|Student $user
+         * @var User $user
          */
         $user = $provider->retrieveByCredentials($credentials);
 
