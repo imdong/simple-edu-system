@@ -29,6 +29,9 @@ Route::group([
 
     // 账单管理
     Route::apiResource('invoices', App\Http\Controllers\InvoiceController::class);
+
+    // 学生管理
+    Route::apiResource('students', App\Http\Controllers\StudentController::class);
 });
 
 // 学生相关路由

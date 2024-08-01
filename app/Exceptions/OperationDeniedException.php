@@ -19,6 +19,6 @@ class OperationDeniedException extends Exception
         return response()->json([
             'code'    => 403,
             'message' => $this->getMessage()
-        ], 403);
+        ]);
     }
 }

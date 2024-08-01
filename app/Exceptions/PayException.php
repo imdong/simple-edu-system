@@ -15,6 +15,6 @@ class PayException extends Exception
         return response()->json([
             'code'    => $this->getCode(),
             'message' => $this->getMessage()
-        ], $this->getCode());
+        ]);
     }
 }

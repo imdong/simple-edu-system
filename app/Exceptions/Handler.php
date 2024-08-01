@@ -49,7 +49,7 @@ class Handler extends ExceptionHandler
                     'code'    => 400,
                     'message' => $e->getMessage(),
                     'data'    => $e->errors(),
-                ], 400);
+                ]);
             }
         });
 
@@ -59,7 +59,7 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'code'    => 401,
                     'message' => $e->getMessage()
-                ], 401);
+                ]);
             }
         });
 
@@ -69,7 +69,7 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'code'    => 403,
                     'message' => $e->getMessage()
-                ], 403);
+                ]);
             }
         });
 
@@ -79,7 +79,7 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'code'    => 404,
                     'message' => $e->getMessage()
-                ], 404);
+                ]);
             }
         });
 
@@ -89,7 +89,7 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'code'    => $e->getCode(),
                     'message' => $e->getMessage()
-                ], 500);
+                ]);
             }
         });
     }

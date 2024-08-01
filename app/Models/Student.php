@@ -3,6 +3,8 @@
 namespace App\Models;
 
 
+use App\Models\Scopes\PaginationScope;
+
 /**
  * 学生表
  *
@@ -14,6 +16,7 @@ namespace App\Models;
  */
 class Student extends User
 {
+    use PaginationScope;
     protected string $role = User::USER_ROLE_STUDENT;
 
     protected $fillable = [
