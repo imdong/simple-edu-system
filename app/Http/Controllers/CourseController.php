@@ -26,7 +26,7 @@ class CourseController extends Controller
             throw new OperationDeniedException('无权限执行该操作');
         }
 
-        $data = Course::query()
+        $data = Course::query()->append(['student', 'teacher'])
             ->usePage();
 
         return $this->successData($data);
@@ -68,7 +68,7 @@ class CourseController extends Controller
             throw new OperationDeniedException('无权限执行该操作');
         }
 
-        return $this->successData($course->append(['student']));
+        return $this->successData($course->append(['student', 'teacher']));
     }
 
     /**
