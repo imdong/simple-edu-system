@@ -23,7 +23,7 @@
                            @click="handleEditShow(scope.$index, scope.row)">
                     编辑
                 </el-button>
-                <el-button v-show="userStore.role === 'teacher'" size="small" type="primary"
+                <el-button v-show="userStore.role === 'teacher' && !scope.row.invoice" size="small" type="primary"
                            @click="handleInvoice(scope.$index, scope.row)">
                     创建账单
                 </el-button>
@@ -215,6 +215,7 @@ export default defineComponent({
                 cost: parseFloat(row.cost),
                 student_id: row.student_id,
             }
+            this.studentList = [row.student]
         },
         handleEdit() {
             this.dialogAddSubmitLoading = true;

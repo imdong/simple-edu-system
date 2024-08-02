@@ -74,9 +74,9 @@ export default {
     data() {
         return {
             loginForm: {
-                type: 'teacher',
-                username: 'teacher',
-                password: 'teacher',
+                type: '',
+                username: '',
+                password: '',
             },
             loginRules: {
                 type: [{required: true}],

@@ -15,7 +15,7 @@ class InvoiceSeeder extends Seeder
     public function run(): void
     {
         // 选择一半的课程来生成账单
-        Course::query()->inRandomOrder()->take(100)->each(function (Course $course) {
+        Course::query()->inRandomOrder()->limit(100)->get()->each(function (Course $course) {
             $model = InvoiceService::create($course);
 
             // 一半的概率已发送

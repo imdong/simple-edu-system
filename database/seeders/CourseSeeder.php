@@ -12,12 +12,12 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 先生成 2-2 的几个订单
+        Course::factory()->count(500)->create();
+
+        // 生成 2-2 的几个订单
         Course::factory()->count(20)->create([
             'teacher_id' => 2,
             'student_id' => 2
         ]);
-
-        Course::factory()->count(500)->create();
     }
 }
