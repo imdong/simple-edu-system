@@ -5,9 +5,14 @@
 <template>
     <el-table :data="tableList" style="width: 100%" v-loading="isLoading">
         <el-table-column label="ID" prop="id" width="50"/>
+        <el-table-column label="课程名" prop="course.name" min-width="150"/>
+        <el-table-column v-show="userStore.role === 'teacher'" label="学生" prop="student.name"/>
+        <el-table-column v-show="userStore.role === 'student'" label="老师" prop="teacher.name"/>
         <el-table-column label="金额" prop="amount_raed" width="70"/>
         <el-table-column label="状态" prop="status" :formatter="formatterStatus" width="100"/>
-        <el-table-column align="right" min-width="140">
+        <el-table-column label="创建时间" prop="created_at" :formatter="formatterDate" width="170"/>
+        <el-table-column label="付款时间" prop="paid_at" :formatter="formatterDate" width="170"/>
+        <el-table-column align="right" min-width="80">
             <template #default="scope">
                 <el-button v-show="userStore.role === 'teacher' && scope.row.status === 1" size="small" type="primary"
                            @click="handleSend(scope.$index, scope.row)">
@@ -48,7 +53,7 @@ import {useCourseStore} from "../stores/course.js";
 import {defineComponent} from "vue";
 import {useUserStore} from "../stores/user.js";
 import {useStudentStore} from "../stores/student.js";
-import {ElNotification} from "element-plus";
+import {dayjs, ElNotification} from "element-plus";
 import {useInvoiceStore} from "../stores/invoice.js";
 import OmiseCreateToken from "../utils/omise.js";
 
@@ -102,6 +107,12 @@ export default defineComponent({
         },
         formatterStatus(row) {
             return this.statusMap[row.status]
+        },
+        formatterDate(row, column, value, index){
+            if (!value) {
+                return '-'
+            }
+            return dayjs(value * 1000).format('YYYY-MM-DD HH:mm:ss')
         },
         handleDelete(index, row) {
             this.isLoading = true;

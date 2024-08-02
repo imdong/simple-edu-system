@@ -72,13 +72,29 @@ class Course extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function teacher(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Teacher::class, 'id', 'teacher_id');
+    }
+
+    /**
      * 添加关联老师字段
      *
      * @return Model
      */
     public function getTeacherAttribute(): Model
     {
-        return $this->hasOne(Teacher::class, 'id', 'teacher_id')->first();
+        return $this->teacher()->first();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function student(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Student::class, 'id', 'student_id');
     }
 
     /**
@@ -88,7 +104,7 @@ class Course extends Model
      */
     public function getStudentAttribute(): Model
     {
-        return $this->hasOne(Student::class, 'id', 'student_id')->first();
+        return $this->student()->first();
     }
 
     /**
@@ -99,6 +115,14 @@ class Course extends Model
     public function invoice(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Invoice::class, 'course_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne|null
+     */
+    public function getInvoiceAttribute(): \Illuminate\Database\Eloquent\Relations\HasOne|null
+    {
+        return $this->invoice()->first();
     }
 
 }

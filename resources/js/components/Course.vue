@@ -8,8 +8,9 @@
         <el-table-column label="课程名" prop="name" min-width="150"/>
         <el-table-column label="年月" prop="date" width="90"/>
         <el-table-column label="费用" prop="cost" width="70"/>
-        <el-table-column label="创建时间" prop="created_at"/>
-        <el-table-column label="学生" prop="student_id"/>
+        <el-table-column label="创建时间" prop="created_at" :formatter="formatterDate" width="170"/>
+        <el-table-column v-show="userStore.role === 'teacher'" label="学生" prop="student.name"/>
+        <el-table-column v-show="userStore.role === 'student'" label="老师" prop="teacher.name"/>
         <el-table-column align="right" min-width="140">
             <template #header>
                 <el-button v-show="userStore.role === 'teacher'" size="small"
@@ -108,7 +109,7 @@ import {useCourseStore} from "../stores/course.js";
 import {defineComponent} from "vue";
 import {useUserStore} from "../stores/user.js";
 import {useStudentStore} from "../stores/student.js";
-import {ElNotification} from "element-plus";
+import {dayjs, ElNotification} from "element-plus";
 import {useInvoiceStore} from "../stores/invoice.js";
 
 export default defineComponent({
@@ -148,6 +149,9 @@ export default defineComponent({
                 this.listTotal = response.data.total
                 this.isLoading = false
             })
+        },
+        formatterDate(row, column, value, index) {
+            return dayjs(value * 1000).format('YYYY-MM-DD HH:mm:ss')
         },
         handleStudentSearch(name) {
             this.studentLoading = true;

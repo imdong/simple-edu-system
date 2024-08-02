@@ -35,7 +35,7 @@ class InvoiceController extends Controller
         }
 
         return $this->successData(
-            $query->append(['student', 'teacher', 'course'])->usePage()
+            $query->with(['student', 'teacher', 'course'])->usePage()
         );
     }
 
@@ -79,7 +79,7 @@ class InvoiceController extends Controller
         }
 
         return $this->successData(
-            $invoice->append(['course', 'student', 'teacher'])
+            $invoice->with(['course', 'student', 'teacher'])
         );
     }
 
