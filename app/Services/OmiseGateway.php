@@ -28,7 +28,7 @@ class OmiseGateway implements PaymentGateway
      */
     protected \OmiseCharge $response;
 
-    public function __construct(string $card = '', string $publicKey = '', string $secretKey = '')
+    public function __construct(string $card = '', string $publicKey = null, string $secretKey = null)
     {
         $this->card = $card;
         $this->publicKey = $publicKey ?? config('omise.public_key');
@@ -42,10 +42,12 @@ class OmiseGateway implements PaymentGateway
      */
     public function charge(array $params): self
     {
+        $params = $params + [
+                'card' => $this->card
+            ];
+
         try {
-            $this->response = \OmiseCharge::create($params + [
-                    'card' => $this->card
-                ], $this->publicKey, $this->secretKey);
+            $this->response = \OmiseCharge::create($params, $this->publicKey, $this->secretKey);
 
             return $this;
         } catch (\OmiseException $e) {

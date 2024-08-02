@@ -2,8 +2,6 @@
 
 namespace Database\Factories;
 
-use Faker\Provider\DateTime;
-use Faker\Provider\Person;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,9 +16,6 @@ class CourseFactory extends Factory
      */
     public function definition(): array
     {
-        $this->faker->addProvider(new Person($this->faker));
-        $this->faker->addProvider(new DateTime($this->faker));
-
         return [
             'name'       => $this->faker->name(),
             'date'       => $this->faker->dateTimeBetween('-2 years', '+1 years')->format('Y-m-01'),

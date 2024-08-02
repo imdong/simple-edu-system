@@ -10,8 +10,7 @@ use App\Services\OmiseGateway;
 use App\Services\PayService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class InvoiceTest extends TestCase
 {
@@ -58,9 +57,9 @@ class InvoiceTest extends TestCase
         // 创建一个 Mock 对象来模拟 OmiseGateway
         $mockGateway = $this->getMockBuilder(OmiseGateway::class)
             ->setConstructorArgs([
-                $card = 'token',
-                $publicKey = 'pub_token',
-                $secretKey = 'sec_token'
+                'token',
+                'pub_token',
+                'sec_token'
             ])
             ->getMock();
 
