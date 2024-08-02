@@ -46,6 +46,18 @@ class Teacher extends User
      */
     protected $casts = [
         'password' => 'hashed',
+        'created_at' => 'timestamp',
+        'updated_at' => 'timestamp',
+    ];
+
+    /**
+     * 自动转换时间
+     *
+     * @var string[] dates
+     */
+    protected $dates = [
+        'created_at',
+        'updated_at',
     ];
 
     protected static function boot()

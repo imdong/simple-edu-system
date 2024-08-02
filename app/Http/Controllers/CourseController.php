@@ -68,7 +68,7 @@ class CourseController extends Controller
             throw new OperationDeniedException('无权限执行该操作');
         }
 
-        return $this->successData($course->append(['student', 'teacher']));
+        return $this->successData($course->append(['student', 'teacher', 'invoice']));
     }
 
     /**

@@ -79,7 +79,7 @@ class InvoiceController extends Controller
         }
 
         return $this->successData(
-            $invoice->with(['course', 'student', 'teacher'])
+            $invoice->append(['course', 'student', 'teacher'])
         );
     }
 
