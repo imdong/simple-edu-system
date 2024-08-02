@@ -27,24 +27,15 @@ class PayService
     protected ?string $description;
 
     /**
-     * @var string 实际付款金额
+     * @var PaymentGateway 支付接口
      */
-    protected string $paid_amount;
+    protected PaymentGateway $gateway;
 
-    /**
-     * @var string 付款订单编号
-     */
-    protected string $paid_id;
-
-    /**
-     * @var Carbon 订单付款时间
-     */
-    protected Carbon $paid_at;
-
-    public function __construct(int $amount, string $description = null)
+    public function __construct(int $amount, string $description = null, PaymentGateway $gateway = null)
     {
         $this->amount = $amount;
         $this->description = $description;
+        $this->gateway = $gateway ?: new OmiseGateway();
     }
 
     public static function create(int $amount, string $description = null): PayService
@@ -53,63 +44,39 @@ class PayService
     }
 
     /**
-     * 使用 Omise Charge 接口支付
+     * 指定使用的支付接口
      *
-     * @throws PayException
+     * @param PaymentGateway $gateway
+     * @return PayService
      */
-    public function omiseCharge(string $omise_token): static
+    public function setGateway(PaymentGateway $gateway): PayService
     {
-        $config = config('omise');
-
-        try {
-            $data = \OmiseCharge::create([
-                'amount'      => $this->amount,
-                'currency'    => $this->currency,
-                'card'        => $omise_token,
-                'description' => $this->description,
-            ], $config['public_key'], $config['secret_key']);
-        } catch (\OmiseException $e) {
-            throw new PayException($e->getMessage(), 502);
-        }
-
-        // 是否成功了？
-        if (!$data->offsetGet('paid')) {
-            throw new PayException(
-                $data->offsetGet('failure_message'),
-                403
-            );
-        }
-
-        // 保存关键结果
-        $this->paid_amount = $data->offsetGet('amount');
-        $this->paid_id = $data->offsetGet('id');
-        $this->paid_at = Carbon::parse($data->offsetGet('paid_at'));
-
+        $this->gateway = $gateway;
         return $this;
     }
 
     /**
-     * @return string
+     * 使用 Omise Charge 接口支付
+     *
+     * @throws PayException
      */
-    public function getPaidAmount(): string
+    public function charge(): PaymentGateway
     {
-        return $this->paid_amount;
-    }
+        $data = $this->gateway->charge([
+            'amount'      => $this->amount,
+            'currency'    => $this->currency,
+            'description' => $this->description,
+        ]);
 
-    /**
-     * @return string
-     */
-    public function getPaidId(): string
-    {
-        return $this->paid_id;
-    }
+        // 是否成功了？
+        if (!$data->getPaid()) {
+            throw new PayException(
+                $data->getFailureMessage(),
+                403
+            );
+        }
 
-    /**
-     * @return Carbon
-     */
-    public function getPaidAt(): Carbon
-    {
-        return $this->paid_at;
+        return $data;
     }
 }
 

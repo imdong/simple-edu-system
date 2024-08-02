@@ -56,10 +56,11 @@ class InvoiceService extends BaseService
     /**
      * 发送账单
      *
+     * @param Request $request
      * @return void
      * @throws OperationDeniedException
      */
-    public function send(): void
+    public function send(Request $request): void
     {
         // 检查状态
         if ($this->model->status != Invoice::STATUS_CREATED) {
@@ -79,8 +80,6 @@ class InvoiceService extends BaseService
      */
     public function pay(Request $request): void
     {
-        $omise_token = $request->input('omise_token');
-
         // 只有支付失败与待付款才可以继续
         if (!in_array($this->model->status, [Invoice::STATUS_PAY_FAILED, Invoice::STATUS_SENT])) {
             throw new OperationDeniedException('当前账单状态不允许进行支付');
@@ -92,12 +91,16 @@ class InvoiceService extends BaseService
             ->saveOrFail();
 
         try {
-            $data = PayService::create($this->model->amount, sprintf(
+            $description = sprintf(
                 'buy %s Invoice(%d) %s',
                 config('app.name'),
                 $this->model->id,
                 $this->model->course->course_name
-            ))->omiseCharge($omise_token);
+            );
+
+            $data = PayService::create($this->model->amount, $description)
+                ->setGateway(OmiseGateway::make($request))
+                ->charge();
 
             // 保存付款信息
             $this->model->paid(
