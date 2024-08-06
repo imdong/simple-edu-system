@@ -13,6 +13,13 @@
         <el-table-column label="创建时间" prop="created_at" :formatter="formatterDate" width="170"/>
         <el-table-column label="付款时间" prop="paid_at" :formatter="formatterDate" width="170"/>
         <el-table-column align="right" min-width="80">
+            <template #header>
+                <el-button v-show="userStore.role === 'teacher'" size="small" type="primary"
+                           @click="handleAddShow">
+                    创建账单
+                </el-button>
+            </template>
+
             <template #default="scope">
                 <el-button v-show="userStore.role === 'teacher' && scope.row.status === 1" size="small" type="primary"
                            @click="handleSend(scope.$index, scope.row)">
@@ -46,6 +53,74 @@
                        @current-change="handleCurrentChange"
         />
     </el-row>
+
+    <el-dialog
+        v-model="dialogAdd"
+        title="新建账单"
+        width="500"
+    >
+        <el-form :model="formAddInvoice" label-width="auto" style="max-width: 600px">
+            <el-form-item label="课程">
+                <el-select
+                    v-model="formAddInvoice.student_id"
+                    filterable
+                    remote
+                    reserve-keyword
+                    placeholder="搜索要创建账单的课程"
+                    :remote-method="handleInvoiceSearch"
+                    :loading="courseLoading"
+                    style="width: 240px"
+                    @change="handleInvoiceChange"
+                >
+                    <el-option
+                        v-for="item in courseList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                    />
+                </el-select>
+            </el-form-item>
+
+            <el-divider border-style="dashed"> 预览</el-divider>
+            <el-form-item label="年月">
+                <el-date-picker
+                    v-model="addInvoiceSelectCourse.date"
+                    type="month"
+                    value-format="YYYY-MM"
+                    disabled
+                />
+            </el-form-item>
+
+            <el-form-item label="账单金额">
+                <el-input-number v-model="addInvoiceSelectCourse.cost" :precision="2" :step="1" :min="0" disabled/>
+            </el-form-item>
+
+            <el-form-item label="学生">
+                <el-select
+                    v-model="addInvoiceSelectCourse.student_id"
+                    disabled
+                    style="width: 240px"
+                >
+                    <el-option
+                        v-for="item in studentList"
+                        :key="item.id"
+                        :label="`${item.name} (${item.username})`"
+                        :value="item.id"
+                    />
+
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="dialogAdd = false">Cancel</el-button>
+                <el-button type="primary" @click="handleInvoiceSubmit"
+                           v-loading="dialogAddSubmitLoading">
+                    提交
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 
 <script>
@@ -82,15 +157,13 @@ export default defineComponent({
             pageSize: 10,
             dialogAdd: false,
             dialogAddSubmitLoading: false,
-            formAddCourse: {
-                name: '',
-                date: '',
-                cost: null,
-                student_id: null,
+            formAddInvoice: {
+                course_id: null,
             },
-            formEditCourseId: 0,
+            courseList: [],
+            addInvoiceSelectCourse: {},
+            courseLoading: false,
             studentList: [],
-            studentLoading: false,
         }
     },
     mounted() {
@@ -108,7 +181,7 @@ export default defineComponent({
         formatterStatus(row) {
             return this.statusMap[row.status]
         },
-        formatterDate(row, column, value, index){
+        formatterDate(row, column, value, index) {
             if (!value) {
                 return '-'
             }
@@ -147,7 +220,7 @@ export default defineComponent({
                         type: 'success',
                     })
 
-                    this.formAddCourse = {
+                    this.formAddInvoice = {
                         name: '',
                         date: '',
                         cost: null,
@@ -188,7 +261,7 @@ export default defineComponent({
                             type: 'success',
                         })
 
-                        this.formAddCourse = {
+                        this.formAddInvoice = {
                             name: '',
                             date: '',
                             cost: null,
@@ -212,10 +285,6 @@ export default defineComponent({
             })
 
 
-
-
-
-
         },
         handleSizeChange(size) {
             this.pageSize = size
@@ -225,6 +294,77 @@ export default defineComponent({
             this.currentPage = page
             this.fetchData();
         },
+        handleAddShow() {
+            this.formAddInvoice = {
+                course_id: null,
+            }
+            this.dialogAdd = true
+        },
+        handleInvoiceSearch(name) {
+            this.courseLoading = true;
+            this.courseStore.list({
+                'invoice': 0, // 只查询未关联数据的
+                name
+            }, 1, 20).then(response => {
+                this.courseList = response.data.data;
+                this.courseLoading = false;
+            })
+        },
+        handleInvoiceChange(course_id) {
+            this.courseList.forEach(course => {
+                if (course.id === course_id) {
+
+                    this.addInvoiceSelectCourse = {
+                        id: course.id,
+                        name: course.name,
+                        date: course.date,
+                        cost: parseFloat(course.cost),
+                        student_id: course.student_id,
+                    }
+
+                    this.studentList = [course.student]
+                }
+            })
+        },
+        handleInvoiceSubmit() {
+            this.dialogAddSubmitLoading = true;
+            this.invoiceStore.create({
+                course_id: this.addInvoiceSelectCourse.id
+            }).then(response => {
+                if (response.code === 200) {
+                    ElNotification({
+                        title: 'Invoice Create Success',
+                        message: '账单创建成功',
+                        type: 'success',
+                    })
+
+                    this.addInvoiceSelectCourse = {
+                        id: 0,
+                        name: '',
+                        date: '',
+                        cost: null,
+                        student_id: null,
+                    }
+
+                    this.studentList = []
+
+                    this.dialogAdd = false;
+                    this.fetchData()
+                } else {
+                    ElNotification({
+                        title: 'Invoice Create Failed',
+                        message: response.message,
+                        type: 'error',
+                    })
+                }
+
+                this.dialogAddSubmitLoading = false;
+            }).catch(e => {
+                console.log(e);
+            })
+
+
+        }
     }
 })
 </script>

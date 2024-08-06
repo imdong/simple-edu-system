@@ -23,10 +23,6 @@
                            @click="handleEditShow(scope.$index, scope.row)">
                     编辑
                 </el-button>
-                <el-button v-show="userStore.role === 'teacher' && !scope.row.invoice" size="small" type="primary"
-                           @click="handleInvoice(scope.$index, scope.row)">
-                    创建账单
-                </el-button>
 
                 <el-popconfirm title="确定要删除么?" @confirm="handleDelete(scope.$index, scope.row)">
                     <template #reference>
@@ -144,7 +140,7 @@ export default defineComponent({
     methods: {
         fetchData() {
             this.isLoading = true;
-            this.courseStore.list(this.currentPage, this.pageSize).then(response => {
+            this.courseStore.list({}, this.currentPage, this.pageSize).then(response => {
                 this.tableList = response.data.data
                 this.listTotal = response.data.total
                 this.isLoading = false

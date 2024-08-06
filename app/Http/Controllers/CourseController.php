@@ -26,7 +26,26 @@ class CourseController extends Controller
             throw new OperationDeniedException('无权限执行该操作');
         }
 
-        $data = Course::query()->with(['student', 'teacher', 'invoice'])
+        // 查询对象
+        $query = Course::query();
+
+        // 查询条件
+        $params = $request->validate([
+            'name'    => ['string', 'nullable'],
+            'invoice' => ['boolean', 'filled']
+        ]);
+
+        // 查询参数
+        if (!empty($params['name'])) {
+            $query->where('name', 'like', '%' . $params['name'] . '%');
+        }
+
+        // 只查未关联账单的
+        if (isset($params['invoice'])) {
+            $params['invoice'] ? $query->has('invoice') : $query->whereDoesntHave('invoice');
+        }
+
+        $data = $query->with(['student', 'teacher', 'invoice'])
             ->usePage();
 
         return $this->successData($data);

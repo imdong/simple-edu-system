@@ -5,12 +5,12 @@ export const useCourseStore = defineStore('Course', {
     state: () => ({}),
     getters: {},
     actions: {
-        list(page, limit) {
+        list(search, page, limit) {
             const userStore = useUserStore()
 
             return new Promise((resolve, reject) => {
                 axios.get(`/api/${userStore.role}/courses`, {
-                    params: {page, limit},
+                    params: Object.assign(search, {page, limit}),
                     headers: {
                         Authorization: `Bearer ${userStore.token}`
                     }
